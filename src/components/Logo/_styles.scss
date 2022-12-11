@@ -1,0 +1,15 @@
+.app-logo {
+  width: 217px;
+  height: 70px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center center;
+
+  &.light {
+    background-image: url("src/assets/csir-logo-light.png");
+  }
+
+  &.dark {
+    background-image: url("src/assets/csir-logo-dark.png");
+  }
+}

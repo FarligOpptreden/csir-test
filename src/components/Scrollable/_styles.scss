@@ -1,0 +1,53 @@
+@import "../../styles/variables";
+
+.scrollable {
+  & > div:last-of-type {
+    right: 6px !important;
+    width: 8px !important;
+    bottom: 6px !important;
+    top: 6px !important;
+
+    & > div {
+      transition: background-color 0.2s;
+    }
+  }
+}
+
+.light {
+  .scrollable {
+    & > div:last-of-type {
+      & > div {
+        background-color: $scrollbar-background-light !important;
+
+        &:hover,
+        &:active {
+          background-color: $scrollbar-hover-background-light !important;
+        }
+      }
+    }
+  }
+}
+
+.dark {
+  .scrollable {
+    & > div:last-of-type {
+      & > div {
+        background-color: $scrollbar-background-dark !important;
+
+        &:hover,
+        &:active {
+          background-color: $scrollbar-hover-background-dark !important;
+        }
+      }
+    }
+  }
+}
+
+@keyframes scrollable-scrollbar-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}

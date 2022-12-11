@@ -1,0 +1,120 @@
+@import "./variables.scss";
+
+:root {
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  min-width: 320px;
+  min-height: 100vh;
+  justify-content: center;
+  transition: all 0.2s;
+
+  &.light {
+    background-color: $background-light;
+    color: $foreground-light;
+
+    .p-treetable,
+    .p-treetable .p-treetable-scrollable-header {
+      background-color: $container-background-light;
+    }
+
+    .p-treetable .p-treetable-thead > tr > th {
+      background-color: $container-background-light;
+      color: $foreground-light;
+      border-color: $border-col-light;
+    }
+
+    .p-treetable .p-treetable-tbody > tr {
+      background-color: $container-background-light;
+      color: $foreground-light;
+      transition: all 0.2s;
+
+      &:not(.p-highlight):hover {
+        background: rgba(0, 0, 0, 0.1) !important;
+        color: inherit !important;
+      }
+
+      & > td {
+        border-color: $border-col-light;
+      }
+    }
+
+    .drop-shadow {
+      box-shadow: $box-shadow-light;
+    }
+
+    .card {
+      border-radius: $border-radius;
+      background-color: $container-background-light;
+    }
+
+    .framed {
+      border: solid 1px rgba(0, 0, 0, 0.1);
+      border-width: 1px 0;
+    }
+
+    .pi-fw {
+      color: $foreground-light;
+    }
+  }
+
+  &.dark {
+    background-color: $background-dark;
+    color: $foreground-dark;
+
+    .p-treetable {
+      background-color: $container-background-dark;
+    }
+
+    .p-treetable .p-treetable-thead > tr > th {
+      background-color: $container-background-dark;
+      color: $foreground-dark;
+      border-color: $border-col-dark;
+    }
+
+    .p-treetable .p-treetable-tbody > tr {
+      background-color: $container-background-dark;
+      color: $foreground-dark;
+      transition: all 0.2s;
+
+      &:not(.p-highlight):hover {
+        background: rgba(255, 255, 255, 0.1) !important;
+        color: inherit !important;
+      }
+
+      & > td {
+        border-color: $border-col-dark;
+      }
+    }
+
+    .drop-shadow {
+      box-shadow: $box-shadow-dark;
+    }
+
+    .card {
+      border-radius: $border-radius;
+      background-color: $container-background-dark;
+    }
+
+    .framed {
+      border: solid 1px rgba(255, 255, 255, 0.1);
+      border-width: 1px 0;
+    }
+
+    .pi-fw {
+      color: $foreground-dark;
+    }
+  }
+}
