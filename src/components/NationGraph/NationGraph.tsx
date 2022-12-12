@@ -1,17 +1,29 @@
 import { useEffect, useState } from "react";
 import { Chart } from "primereact/chart";
 import TreeNodeData from "@/interfaces/TreeNodeData";
-import { StateTopics } from "@utils";
-import { useSubscription } from "@hooks";
+import { asyncify, StateTopics } from "@utils";
+import { useStateReducer, useSubscription } from "@hooks";
 import "./_styles.scss";
 import { censusService } from "@services";
 
+interface State {
+  labels?: string[] | undefined;
+  data?: number[] | undefined;
+  loading?: boolean | undefined;
+}
+
 function NationOverview({ nation }: { nation: string }) {
-  const [labels, setLabels] = useState<string[]>([]);
-  const [data, setData] = useState<number[]>([]);
+  const [state, setState] = useStateReducer<State>({
+    labels: [],
+    data: [],
+    loading: false,
+  });
+  const { labels, data, loading } = state;
 
   useEffect(() => {
     const loadData = async () => {
+      setState({ loading: true });
+
       const results = await censusService.getNationData();
       const _data: number[] = [];
       const _labels: string[] = [];
@@ -22,15 +34,33 @@ function NationOverview({ nation }: { nation: string }) {
         _labels.push(r.Year);
       }
 
-      setData(_data);
-      setLabels(_labels);
+      await asyncify(
+        () =>
+          setState({
+            data: _data,
+            labels: _labels,
+            loading: false,
+          }),
+        10
+      );
     };
 
     loadData();
   }, [nation]);
 
+  useEffect(() => {
+    console.log(state);
+  }, [state]);
+
+  if (loading)
+    return (
+      <p className="loading">
+        <i className="pi pi-spinner pi-spin" />
+      </p>
+    );
+
   return (
-    <div className="graph">
+    <>
       <h1>Population for {nation}</h1>
       <Chart
         type="line"
@@ -53,16 +83,22 @@ function NationOverview({ nation }: { nation: string }) {
           },
         }}
       />
-    </div>
+    </>
   );
 }
 
 function YearOverview({ year }: { year: string }) {
-  const [labels, setLabels] = useState<string[]>([]);
-  const [data, setData] = useState<number[]>([]);
+  const [state, setState] = useStateReducer<State>({
+    labels: [],
+    data: [],
+    loading: false,
+  });
+  const { labels, data, loading } = state;
 
   useEffect(() => {
     const loadData = async () => {
+      setState({ loading: true });
+
       const results = await censusService.getStateData(parseInt(year, 10));
       const _data: number[] = [];
       const _labels: string[] = [];
@@ -73,15 +109,29 @@ function YearOverview({ year }: { year: string }) {
         _labels.push(r.State);
       }
 
-      setData(_data);
-      setLabels(_labels);
+      await asyncify(
+        () =>
+          setState({
+            data: _data,
+            labels: _labels,
+            loading: false,
+          }),
+        10
+      );
     };
 
     loadData();
   }, [year]);
 
+  if (loading)
+    return (
+      <p className="loading">
+        <i className="pi pi-spinner pi-spin" />
+      </p>
+    );
+
   return (
-    <div className="graph">
+    <>
       <h1>Population for {year}</h1>
       <Chart
         type="bar"
@@ -104,16 +154,22 @@ function YearOverview({ year }: { year: string }) {
           },
         }}
       />
-    </div>
+    </>
   );
 }
 
-function StateOverview({ state }: { state: string }) {
-  const [labels, setLabels] = useState<string[]>([]);
-  const [data, setData] = useState<number[]>([]);
+function StateOverview({ nationState }: { nationState: string }) {
+  const [state, setState] = useStateReducer<State>({
+    labels: [],
+    data: [],
+    loading: false,
+  });
+  const { labels, data, loading } = state;
 
   useEffect(() => {
     const loadData = async () => {
+      setState({ loading: true });
+
       const results = await censusService.getAllData();
       const _data: number[] = [];
       const _labels: string[] = [];
@@ -121,22 +177,36 @@ function StateOverview({ state }: { state: string }) {
       for (let i = results.length - 1; i >= 0; i--) {
         const r = results[i];
 
-        if (r.State !== state) continue;
+        if (r.State !== nationState) continue;
 
         _data.push(r.Population);
         _labels.push(r.Year);
       }
 
-      setData(_data);
-      setLabels(_labels);
+      await asyncify(
+        () =>
+          setState({
+            data: _data,
+            labels: _labels,
+            loading: false,
+          }),
+        10
+      );
     };
 
     loadData();
-  }, [state]);
+  }, [nationState]);
+
+  if (loading)
+    return (
+      <p className="loading">
+        <i className="pi pi-spinner pi-spin" />
+      </p>
+    );
 
   return (
-    <div className="graph">
-      <h1>Population for {state}</h1>
+    <>
+      <h1>Population for {nationState}</h1>
       <Chart
         type="line"
         data={{
@@ -158,7 +228,7 @@ function StateOverview({ state }: { state: string }) {
           },
         }}
       />
-    </div>
+    </>
   );
 }
 
@@ -168,7 +238,7 @@ export default function NationGraph({}) {
   useSubscription<TreeNodeData>(StateTopics.TreeNodeSelect, setSelectedNode);
 
   return (
-    <>
+    <div className="graph" key={`graph-${selectedNode?.text}`}>
       {selectedNode?.type === "nation" && (
         <NationOverview nation={selectedNode.text} />
       )}
@@ -176,8 +246,8 @@ export default function NationGraph({}) {
         <YearOverview year={selectedNode.text} />
       )}
       {selectedNode?.type === "state" && (
-        <StateOverview state={selectedNode.text} />
+        <StateOverview nationState={selectedNode.text} />
       )}
-    </>
+    </div>
   );
 }

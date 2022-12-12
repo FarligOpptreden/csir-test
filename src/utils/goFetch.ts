@@ -194,7 +194,7 @@ const goFetch = (url: string): FetchWrapper => new FetchWrapper(url);
  * @param {Object} defaults.queryParameters The default query parameters to be applied to all fetch calls
  * @param {Object} defaults.headers The default headers to be applied to all fetch calls
  */
-const configureDefaults = (defaults: FetchWrapperDefaults): void => {
+const configureGoFetch = (defaults: FetchWrapperDefaults): void => {
   if (defaults.appRoot !== undefined) defaultAppRoot = defaults.appRoot;
   if (defaults.queryParameters !== undefined)
     defaultQueryParameters = defaults.queryParameters;
@@ -217,4 +217,4 @@ const contentTypes = {
   pdf: "application/pdf",
 };
 
-export { goFetch, configureDefaults, contentTypes };
+export { goFetch, configureGoFetch, contentTypes };

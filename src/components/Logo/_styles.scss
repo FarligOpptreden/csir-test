@@ -6,10 +6,10 @@
   background-position: center center;
 
   &.light {
-    background-image: url("src/assets/csir-logo-light.png");
+    background-image: url("/csir-logo-light.png");
   }
 
   &.dark {
-    background-image: url("src/assets/csir-logo-dark.png");
+    background-image: url("/csir-logo-dark.png");
   }
 }

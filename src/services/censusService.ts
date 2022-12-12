@@ -1,18 +1,21 @@
 import ApiData from "@/interfaces/ApiData";
 import NationData from "@/interfaces/NationData";
 import StateData from "@/interfaces/StateData";
-import { goFetch as F } from "@utils";
+import { asyncify, goFetch as F } from "@utils";
 import endpoints from "./endpoints";
 
 interface Cache {
   [key: string]: ApiData;
 }
 
+const asyncDelay = 0;
 const _Cache: Cache = {};
 
 export default {
   getNationData: async () => {
     if (_Cache["nation"]) return _Cache["nation"] as NationData[];
+
+    await asyncify(() => {}, asyncDelay);
 
     const result = await F.goFetch(endpoints.dataUsaApi)
       .withQueryParameters({
@@ -31,6 +34,8 @@ export default {
 
     if (_Cache[key]) return _Cache[key] as StateData[];
 
+    await asyncify(() => {}, asyncDelay);
+
     const result = await F.goFetch(endpoints.dataUsaApi)
       .withQueryParameters({
         drilldowns: "State",
@@ -46,6 +51,8 @@ export default {
 
   getAllData: async () => {
     if (_Cache["all"]) return _Cache["all"] as StateData[];
+
+    await asyncify(() => {}, asyncDelay);
 
     const result = await F.goFetch(endpoints.dataUsaApi)
       .withQueryParameters({

@@ -6,11 +6,11 @@ import "primereact/resources/themes/md-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import { configureUseSubscription } from "@hooks";
-import { configureDefaults } from "./utils/goFetch";
+import { configureGoFetch } from "./utils/goFetch";
 
 PrimeReact.ripple = true;
 configureUseSubscription({ persistInLocalStorage: true });
-configureDefaults({
+configureGoFetch({
   corsMode: "cors",
   credentials: "omit",
   defaultResponseParser: async (r: Response) => await r.json(),

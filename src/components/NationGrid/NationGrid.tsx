@@ -1,23 +1,33 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { TreeTable, TreeTableEventParams } from "primereact/treetable";
 import { Column } from "primereact/column";
 import TreeNode from "primereact/treenode";
 import { censusService } from "@services";
 import "./_styles.scss";
-import { publish } from "@hooks";
+import { publish, useStateReducer } from "@hooks";
 import TreeNodeData from "@/interfaces/TreeNodeData";
 import { StateTopics } from "@utils";
 import ApiData from "@/interfaces/ApiData";
 
+interface State {
+  nodes?: TreeNode[] | undefined;
+  loadingGrid?: boolean | undefined;
+  loadingNode?: boolean | undefined;
+  selectedNode?: string | undefined;
+}
+
 export default function NationGrid({}) {
-  const [nodes, setNodes] = useState<TreeNode[]>([]);
-  const [loadingGrid, setLoadingGrid] = useState(false);
-  const [loadingNode, setLoadingNode] = useState(false);
-  const [selectedNode, setSelectedNode] = useState("");
+  const [state, setState] = useStateReducer<State>({
+    nodes: [],
+    loadingGrid: false,
+    loadingNode: false,
+    selectedNode: "",
+  });
+  const { nodes, loadingGrid, loadingNode, selectedNode } = state;
 
   useEffect(() => {
     const loadData = async () => {
-      setLoadingGrid(true);
+      setState({ loadingGrid: true });
 
       const data = await censusService.getNationData();
       const numberFormatter = new Intl.NumberFormat("en-US");
@@ -49,8 +59,8 @@ export default function NationGrid({}) {
         });
       });
 
-      setNodes(
-        Object.keys(nationNodes).map((key) => {
+      setState({
+        nodes: Object.keys(nationNodes).map((key) => {
           const nation = nationNodes[key];
 
           return {
@@ -63,20 +73,27 @@ export default function NationGrid({}) {
             },
             children: nation.children,
           };
-        })
-      );
-      setLoadingGrid(false);
+        }),
+        loadingGrid: false,
+      });
     };
 
     loadData();
   }, []);
+
+  if (loadingGrid)
+    return (
+      <p className="loading">
+        <i className="pi pi-spinner pi-spin" />
+      </p>
+    );
 
   const handleExpand = async (e: TreeTableEventParams) => {
     if (e.node.children) return;
 
     const lazyNode = { ...e.node };
 
-    setLoadingNode(true);
+    setState({ loadingNode: true });
 
     const data = await censusService.getStateData(e.node.data.text);
     const numberFormatter = new Intl.NumberFormat("en-US");
@@ -101,12 +118,14 @@ export default function NationGrid({}) {
       return node;
     };
 
-    setNodes(nodes.map((node) => recursiveMap(node)));
-    setLoadingNode(false);
+    setState({
+      nodes: nodes?.map((node) => recursiveMap(node)),
+      loadingNode: false,
+    });
   };
 
   const handleSelect = (e: TreeTableEventParams) => {
-    setSelectedNode(`${e.node.key}`);
+    setState({ selectedNode: `${e.node.key}` });
     publish<TreeNodeData>(StateTopics.TreeNodeSelect, e.node.data);
   };
 
