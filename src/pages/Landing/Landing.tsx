@@ -12,7 +12,6 @@ export default function Landing({}) {
     <div className="wrapper">
       <div className="header">
         <Logo />
-        DEPLOYMENT TEST
         <ThemeSelector />
       </div>
       <div className="body">
